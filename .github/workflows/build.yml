@@ -13,8 +13,13 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - run: flutter pub get
-      - run: flutter build apk --release --no-tree-shake-icons
+      
+      - name: Create Native Skeleton & Build APK
+        run: |
+          flutter create . --org com.khaerul.terminal --project-name khaerul_terminal --overwrite
+          flutter pub get
+          flutter build apk --release --no-tree-shake-icons
+
       - uses: actions/upload-artifact@v4
         with:
           name: khaerul-terminal-android-apk
@@ -28,9 +33,14 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - run: flutter pub get
-      - run: flutter config --enable-windows-desktop
-      - run: flutter build windows --release
+      
+      - name: Create Native Skeleton & Build EXE
+        run: |
+          flutter config --enable-windows-desktop
+          flutter create . --org com.khaerul.terminal --project-name khaerul_terminal --platforms=windows --overwrite
+          flutter pub get
+          flutter build windows --release
+
       - uses: actions/upload-artifact@v4
         with:
           name: khaerul-terminal-windows-exe
