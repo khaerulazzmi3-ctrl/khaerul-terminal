@@ -1,73 +1,150 @@
-import 'dart:io';
-import 'dart:convert';
+import 'package:flutter/material.dart';
 
-class KhaerulTerminalTimeEngine {
-  static const int wibOffsetSeconds = 7 * 3600; 
-  static const int maxAgeLimitSeconds = 30 * 3600;
+void main() {
+  runApp(const KhaerulTerminalApp());
+}
 
-  static DateTime getNowUtc() => DateTime.now().toUtc();
+class KhaerulTerminalApp extends StatelessWidget {
+  const KhaerulTerminalApp({super.key});
 
-  static DateTime getNowWib() {
-    DateTime utcNow = getNowUtc();
-    DateTime shifted = utcNow.add(const Duration(seconds: wibOffsetSeconds));
-    return DateTime.utc(
-      shifted.year, shifted.month, shifted.day,
-      shifted.hour, shifted.minute, shifted.second, shifted.millisecond,
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'khaerul-terminal',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: const Color(0xFF0D1117),
+        cardColor: const Color(0xFF161B22),
+        primaryColor: Colors.blueAccent,
+      ),
+      home: const TerminalDashboard(),
     );
-  }
-
-  Map<String, dynamic> processMarketData(Map<String, dynamic> rawFeed) {
-    final DateTime nowUtc = getNowUtc();
-    final DateTime nowWib = getNowWib();
-    final DateTime expiryUtc = nowUtc.add(const Duration(seconds: maxAgeLimitSeconds));
-
-    return {
-      'status': 'success',
-      'id': rawFeed['id'] ?? 'unknown',
-      'title': rawFeed['title'] ?? 'No Title',
-      'rating': rawFeed['rating'] ?? 0,
-      'timestamp_wib': formatWibTime(nowWib),
-      'created_at_epoch': nowUtc.millisecondsSinceEpoch,
-      'expiry_timestamp': expiryUtc.millisecondsSinceEpoch,
-    };
-  }
-
-  static String formatWibTime(DateTime time) {
-    String hour = time.hour.toString().padLeft(2, '0');
-    String minute = time.minute.toString().padLeft(2, '0');
-    String second = time.second.toString().padLeft(2, '0');
-    return "$hour:$minute:$second WIB";
   }
 }
 
-void main() async {
-  // Ambil PORT dinamis dari Render Cloud
-  final port = int.parse(Platform.environment['PORT'] ?? '8080');
-  final server = await HttpServer.bind(InternetAddress.anyIPv4, port);
-  final engine = KhaerulTerminalTimeEngine();
+class TerminalDashboard extends StatefulWidget {
+  const TerminalDashboard({super.key});
 
-  print('🚀 Khaerul Terminal Server berjalan di port $port');
+  @override
+  State<TerminalDashboard> createState() => _TerminalDashboardState();
+}
 
-  await for (HttpRequest request in server) {
-    if (request.method == 'GET') {
-      final response = {
-        'service': 'Khaerul Terminal Time Engine',
-        'current_wib': KhaerulTerminalTimeEngine.formatWibTime(KhaerulTerminalTimeEngine.getNowWib()),
-        'status': 'online 24/7'
-      };
-      request.response
-        ..headers.contentType = ContentType.json
-        ..write(jsonEncode(response))
-        ..close();
-    } else if (request.method == 'POST') {
-      final content = await utf8.decoder.bind(request).join();
-      final data = jsonDecode(content);
-      final result = engine.processMarketData(data);
+class _TerminalDashboardState extends State<TerminalDashboard> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  
+  // 6 Tab Kategori Berita Filtered
+  final List<String> _categories = [
+    '🪙 Crypto',
+    '💱 Forex',
+    '🥇 Commodity',
+    '💻 Teknology',
+    '📈 Saham',
+    '🌍 Macro Global'
+  ];
 
-      request.response
-        ..headers.contentType = ContentType.json
-        ..write(jsonEncode(result))
-        ..close();
-    }
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: _categories.length, vsync: this);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF161B22),
+        title: const Text('⚡ KHAERUL TERMINAL v1.0 (WIB)'),
+        elevation: 0,
+        bottom: TabBar(
+          controller: _tabController,
+          isScrollable: true,
+          indicatorColor: Colors.greenAccent,
+          tabs: _categories.map((cat) => Tab(text: cat)).toList(),
+        ),
+      ),
+      body: Column(
+        children: [
+          // Banner Peringatan Pre-News Alert (< 25 Menit)
+          Container(
+            color: Colors.redAccent.withOpacity(0.2),
+            padding: const EdgeInsets.all(12),
+            child: const Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: Colors.redAccent),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '⚠️ PRE-NEWS ALERT (H-25m): US CPI / Inflation Rate rilis jam 19:30 WIB | Forecast: 3.1% | Prev: 3.3%',
+                    style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // List Berita
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: _categories.map((cat) => NewsListView(category: cat)).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class NewsListView extends StatelessWidget {
+  final String category;
+  const NewsListView({super.key, required this.category});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(12),
+      children: [
+        NewsCard(
+          title: 'Sampel Berita $category: Update Pergerakan Pasar',
+          source: 'Live Feed WIB',
+          timeWIB: '11:35 WIB',
+          impact: 'HIGH',
+        ),
+      ],
+    );
+  }
+}
+
+class NewsCard extends StatelessWidget {
+  final String title;
+  final String source;
+  final String timeWIB;
+  final String impact;
+
+  const NewsCard({
+    super.key,
+    required this.title,
+    required this.source,
+    required this.timeWIB,
+    required this.impact,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 10),
+      child: ListTile(
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+        subtitle: Text('$source • $timeWIB', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+        trailing: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: impact == 'HIGH' ? Colors.red : Colors.orange,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(impact, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+        ),
+      ),
+    );
   }
 }
