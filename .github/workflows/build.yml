@@ -28,7 +28,6 @@ jobs:
       - name: Build Web App
         run: |
           flutter config --enable-web
-          flutter create . --org com.khaerul.terminal --project-name khaerul_terminal --platforms=web
           flutter pub get
           flutter build web --release --base-href "/khaerul-terminal/"
 
