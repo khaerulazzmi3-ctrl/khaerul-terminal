@@ -14,9 +14,13 @@ jobs:
         with:
           channel: 'stable'
       
-      - name: Create Native Skeleton & Build APK
+      - name: Setup Project & Protect main.dart
         run: |
+          mkdir backup_lib
+          cp -r lib/* backup_lib/ 2>/dev/null || true
           flutter create . --org com.khaerul.terminal --project-name khaerul_terminal --overwrite
+          cp -r backup_lib/* lib/
+          rm -rf backup_lib
           flutter pub get
           flutter build apk --release --no-tree-shake-icons
 
@@ -34,10 +38,14 @@ jobs:
         with:
           channel: 'stable'
       
-      - name: Create Native Skeleton & Build EXE
+      - name: Setup Project & Protect main.dart
         run: |
+          mkdir backup_lib
+          xcopy /E /I /Y lib backup_lib
           flutter config --enable-windows-desktop
           flutter create . --org com.khaerul.terminal --project-name khaerul_terminal --platforms=windows --overwrite
+          xcopy /E /I /Y backup_lib lib
+          rmdir /S /Q backup_lib
           flutter pub get
           flutter build windows --release
 
