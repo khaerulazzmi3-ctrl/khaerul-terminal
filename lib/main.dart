@@ -25,12 +25,11 @@ class KhaerulBloombergTerminal extends StatelessWidget {
   }
 }
 
-// Model Berita dengan stempel waktu pembuatan
 class NewsItem {
   final String id;
   final String title;
   final String source;
-  final String impact; // HIGH, MEDIUM, LOW
+  final String impact;
   final DateTime timestamp;
 
   NewsItem({
@@ -59,14 +58,12 @@ class _TerminalMainScreenState extends State<TerminalMainScreen> {
     '🌐 MACRO'
   ];
 
-  // Target rilis berita besar (Contoh countdown 25 menit)
   DateTime nextMajorNewsTime = DateTime.now().add(const Duration(minutes: 24, seconds: 50));
   String nextNewsTitle = "US CPI & Core Inflation Data (MoM/YoY)";
   
   late Timer _timer;
   Duration _timeLeft = Duration.zero;
 
-  // Master List Berita
   List<NewsItem> allNews = [];
 
   @override
@@ -106,14 +103,14 @@ class _TerminalMainScreenState extends State<TerminalMainScreen> {
         title: 'Bank of Indonesia Keeps Benchmark Rate Steady at 6.25%',
         source: 'CNBC WIRE',
         impact: 'LOW',
-        timestamp: now.subtract(const Duration(hours: 28)), // Berita 28 jam (hampir 30 jam)
+        timestamp: now.subtract(const Duration(hours: 28)),
       ),
       NewsItem(
         id: '5',
         title: 'Outdated Market Analysis Data on Asian Currencies',
         source: 'OLD WIRE',
         impact: 'LOW',
-        timestamp: now.subtract(const Duration(hours: 32)), // Berita 32 jam -> Otomatis Terhapus!
+        timestamp: now.subtract(const Duration(hours: 32)),
       ),
     ];
 
@@ -121,19 +118,17 @@ class _TerminalMainScreenState extends State<TerminalMainScreen> {
   }
 
   void _startTerminalEngines() {
-    // Engine untuk Countdown Alert & Auto Purge setiap detik
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       final now = DateTime.now();
       final difference = nextMajorNewsTime.difference(now);
 
       setState(() {
         _timeLeft = difference.isNegative ? Duration.zero : difference;
-        _purgeExpiredNews(); // Hapus otomatis berita > 30 jam
+        _purgeExpiredNews();
       });
     });
   }
 
-  // FITUR: Hapus berita yang umurnya sudah melebihi 30 jam (108.000 detik)
   void _purgeExpiredNews() {
     final now = DateTime.now();
     allNews.removeWhere((item) {
@@ -157,7 +152,6 @@ class _TerminalMainScreenState extends State<TerminalMainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Deteksi apakah rilis berita High Impact tinggal <= 25 menit
     bool isWarning25Min = _timeLeft.inMinutes <= 25 && _timeLeft > Duration.zero;
 
     return DefaultTabController(
@@ -208,7 +202,6 @@ class _TerminalMainScreenState extends State<TerminalMainScreen> {
         ),
         body: Column(
           children: [
-            // 🚨 PERINGATAN DARURAT 25 MENIT BEFORE HIGH IMPACT NEWS
             if (isWarning25Min)
               Container(
                 width: double.infinity,
@@ -253,8 +246,6 @@ class _TerminalMainScreenState extends State<TerminalMainScreen> {
                   ],
                 ),
               ),
-
-            // RUNNING TICKER HARGA (BLOOMBERG STYLE)
             Container(
               height: 32,
               color: const Color(0xFF181D26),
@@ -270,8 +261,6 @@ class _TerminalMainScreenState extends State<TerminalMainScreen> {
                 ],
               ),
             ),
-
-            // FEEDS BERITA 6 KATEGORI
             Expanded(
               child: TabBarView(
                 children: categories.map((category) {
