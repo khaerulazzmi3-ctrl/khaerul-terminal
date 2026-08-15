@@ -2,76 +2,46 @@ name: Build Khaerul Terminal (APK & EXE)
 
 on:
   push:
-    branches: [ "main" ]
-  workflow_dispatch:
+    branches: [ main ]
 
 jobs:
-  # ==========================================
-  # 1. BUILD ANDROID APK
-  # ==========================================
-  build-apk:
+  build-android:
     name: Build Android APK
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Setup Java JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+      
+      - name: Setup Android & Build APK
+        run: |
+          flutter create . --org com.khaerul.terminal --project-name khaerul_terminal --platforms=android
+          flutter pub get
+          flutter build apk --release --no-tree-shake-icons
 
-      - name: Install Dependencies
-        run: flutter pub get
-
-      - name: Build APK
-        run: flutter build apk --release
-
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: Khaerul-Terminal-Android-APK
+          name: khaerul-terminal-android-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
-  # ==========================================
-  # 2. BUILD WINDOWS EXE
-  # ==========================================
-  build-exe:
+  build-windows:
     name: Build Windows EXE
     runs-on: windows-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-
-      - name: Enable Windows Desktop Support
-        run: flutter config --enable-windows-desktop
-
-      - name: Install Dependencies
-        run: flutter pub get
-
-      - name: Setup Project & Protect main.dart
-        shell: powershell
+      
+      - name: Setup Windows & Build EXE
         run: |
-          if (Test-Path "backup_lib") {
-              Remove-Item -Recurse -Force backup_lib
-          }
+          flutter config --enable-windows-desktop
+          flutter create . --org com.khaerul.terminal --project-name khaerul_terminal --platforms=windows
+          flutter pub get
+          flutter build windows --release
 
-      - name: Build Windows Executable
-        run: flutter build windows --release
-
-      - name: Upload Windows EXE Artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: Khaerul-Terminal-Windows-EXE
+          name: khaerul-terminal-windows-exe
           path: build/windows/x64/runner/Release/
