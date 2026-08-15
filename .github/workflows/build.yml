@@ -1,22 +1,37 @@
-name: Build Executable
+name: Build Khaerul Terminal (APK & EXE)
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  build:
+  build-android:
+    name: Build Android APK
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - uses: dart-lang/setup-dart@v1
-
-      - name: Compile Dart Application
-        run: dart compile exe main.dart -o khaerul-terminal-app
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+      - uses: subosito/flutter-action@v2
         with:
-          name: khaerul-terminal-binary
-          path: khaerul-terminal-app
+          channel: 'stable'
+      - run: flutter pub get
+      - run: flutter build apk --release --no-tree-shake-icons
+      - uses: actions/upload-artifact@v4
+        with:
+          name: khaerul-terminal-android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  build-windows:
+    name: Build Windows EXE
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: flutter pub get
+      - run: flutter config --enable-windows-desktop
+      - run: flutter build windows --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: khaerul-terminal-windows-exe
+          path: build/windows/x64/runner/Release/
