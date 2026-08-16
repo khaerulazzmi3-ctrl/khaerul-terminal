@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KHAERUL TERMINAL | PRO BLOOMBERG</title>
+    <title>KHAERUL TERMINAL | 7 CATEGORIES BLOOMBERG</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
         body { background-color: #050505; color: #fff; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -15,38 +15,33 @@
         .title { color: #00ff66; font-size: 16px; font-weight: bold; letter-spacing: 1.5px; }
         .top-info { color: #ff9900; font-size: 11px; font-weight: bold; }
 
-        /* ALERT BAR 25 MINS BEFORE NEWS */
-        .alert-banner { background-color: #900C3F; color: white; padding: 8px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #ff4d4d; }
-        .alert-title { font-size: 11px; font-weight: bold; color: #ffeb3b; }
-        .timer-box { background: #000; border: 1px solid #ff4d4d; color: #ff4d4d; padding: 3px 8px; font-weight: bold; font-size: 14px; }
-
         /* TICKER RUNNING */
         .ticker-wrap { background: #181d26; height: 30px; display: flex; align-items: center; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #222; }
         .ticker-item { padding: 0 15px; font-size: 11px; }
         .up { color: #00ff66; font-weight: bold; }
         .down { color: #ff4d4d; font-weight: bold; }
 
-        /* TABS NAV */
+        /* TABS NAV (7 KATEGORI) */
         .tabs-bar { background: #111; display: flex; overflow-x: auto; border-bottom: 1px solid #333; }
-        .tab-btn { background: none; border: none; color: #888; padding: 10px 20px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .tab-btn { background: none; border: none; color: #888; padding: 10px 16px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
         .tab-btn.active { color: #ffb700; border-bottom: 2px solid #ffb700; background: #181818; }
+        .tab-btn.high-impact-tab { color: #ff4d4d; }
+        .tab-btn.high-impact-tab.active { color: #ff4d4d; border-bottom: 2px solid #ff4d4d; background: rgba(255, 77, 77, 0.1); }
 
-        /* NEWS FEED CONTAINER */
+        /* NEWS FEED DISPLAY */
         .feed-container { flex: 1; padding: 15px; overflow-y: auto; background: #090c10; }
         .feed-header { display: flex; justify-content: space-between; color: #ffb700; font-size: 11px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
         
-        /* NEWS ITEM CARD */
-        .news-card { background: #11161d; padding: 12px; margin-bottom: 10px; border-left: 4px solid #00ff66; border-radius: 2px; }
-        .news-card.HIGH { border-left-color: #ff4d4d; }
-        .news-card.MEDIUM { border-left-color: #ff9900; }
-        .news-card.LOW { border-left-color: #0088ff; }
+        .news-card { background: #11161d; padding: 12px; margin-bottom: 10px; border-left: 4px solid #00ff66; border-radius: 2px; cursor: pointer; transition: 0.2s; text-decoration: none; display: block; }
+        .news-card:hover { background: #1a232e; border-left-color: #ffb700; }
+        .news-card.HIGH { border-left-color: #ff4d4d; background: rgba(255, 77, 77, 0.05); }
         .news-meta { display: flex; justify-content: space-between; font-size: 10px; color: #888; margin-bottom: 5px; }
         .news-time { color: #00ff66; font-weight: bold; }
-        .news-impact { padding: 1px 4px; font-weight: bold; border-radius: 2px; }
-        .impact-HIGH { background: rgba(255, 77, 77, 0.2); color: #ff4d4d; }
-        .impact-MEDIUM { background: rgba(255, 153, 0, 0.2); color: #ff9900; }
-        .impact-LOW { background: rgba(0, 136, 255, 0.2); color: #0088ff; }
+        .news-impact { padding: 1px 4px; font-weight: bold; border-radius: 2px; background: rgba(255, 77, 77, 0.2); color: #ff4d4d; }
         .news-title { color: #fff; font-size: 13px; font-weight: bold; line-height: 1.4; }
+        .news-snippet { color: #aaa; font-size: 11px; margin-top: 5px; line-height: 1.3; }
+        .loading-text { color: #ffb700; text-align: center; font-size: 13px; margin-top: 30px; }
+        .alert-box-tab { background: #900C3F; color: #fff; padding: 10px; border-radius: 4px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #ff4d4d; }
     </style>
 </head>
 <body>
@@ -56,19 +51,10 @@
             <span class="badge">BLOOMBERG MODE</span>
             <span class="title">KHAERUL TERMINAL</span>
         </div>
-        <div class="top-info">AUTO-PURGE: 30H 🧹</div>
+        <div class="top-info">AUTO-PURGE: > 30 JAM 🧹</div>
     </div>
 
-    <!-- ALERT 25 MENIT BEFORE HIGH IMPACT NEWS -->
-    <div class="alert-banner" id="alertBanner">
-        <div>
-            <div style="font-weight: bold; font-size: 12px;">⚠️ HIGH IMPACT NEWS ALERT (< 25 MINS)</div>
-            <div class="alert-title" id="newsTitle">US CPI & Core Inflation Data (MoM/YoY)</div>
-        </div>
-        <div class="timer-box" id="countdownTimer">24:50</div>
-    </div>
-
-    <!-- RUNNING TICKER -->
+    <!-- TICKER RUNNING -->
     <div class="ticker-wrap">
         <div class="ticker-item">XAU/USD: <span class="up">2,432.10 (+1.25%)</span></div>
         <div class="ticker-item">EUR/USD: <span class="down">1.0892 (-0.15%)</span></div>
@@ -78,90 +64,135 @@
         <div class="ticker-item">NVDA: <span class="up">128.50 (+2.10%)</span></div>
     </div>
 
-    <!-- TABS MENU -->
+    <!-- 7 TABS MENU -->
     <div class="tabs-bar">
-        <button class="tab-btn active" onclick="switchTab('💱 FOREX')">💱 FOREX</button>
-        <button class="tab-btn" onclick="switchTab('🥇 COMMODITY')">🥇 COMMODITY</button>
-        <button class="tab-btn" onclick="switchTab('₿ CRYPTO')">₿ CRYPTO</button>
-        <button class="tab-btn" onclick="switchTab('🇮🇩 SAHAM')">🇮🇩 SAHAM</button>
-        <button class="tab-btn" onclick="switchTab('💻 TECH')">💻 TECH</button>
-        <button class="tab-btn" onclick="switchTab('🌐 MACRO')">🌐 MACRO</button>
+        <button class="tab-btn high-impact-tab active" onclick="switchTab('🚨 IMPORTANT NEWS', 'high-impact')">🚨 IMPORTANT NEWS (<25M)</button>
+        <button class="tab-btn" onclick="switchTab('💱 FOREX', 'forex')">💱 FOREX</button>
+        <button class="tab-btn" onclick="switchTab('🥇 COMMODITY', 'oil-gold')">🥇 COMMODITY</button>
+        <button class="tab-btn" onclick="switchTab('₿ CRYPTO', 'crypto')">₿ CRYPTO</button>
+        <button class="tab-btn" onclick="switchTab('🇮🇩 SAHAM', 'indonesia')">🇮🇩 SAHAM</button>
+        <button class="tab-btn" onclick="switchTab('💻 TECH', 'technology')">💻 TECH</button>
+        <button class="tab-btn" onclick="switchTab('🌐 MACRO', 'economy')">🌐 MACRO</button>
     </div>
 
-    <!-- NEWS FEED DISPLAY -->
+    <!-- FEED BERITA -->
     <div class="feed-container">
         <div class="feed-header">
-            <span id="categoryLabel">LIVE WIRE :: 💱 FOREX</span>
-            <span id="articleCount">ACTIVE ARTICLES: 4 (MAX AGE: 30H)</span>
+            <span id="categoryLabel">LIVE WIRE :: 🚨 IMPORTANT NEWS (<25M)</span>
+            <span id="articleCount">BERITA AKTIF: 0 (MAX USIA: 30 JAM)</span>
         </div>
-        <div id="newsList"></div>
+        <div id="newsList">
+            <div class="loading-text">⚡ Mengambil data berita rilis mendatang...</div>
+        </div>
     </div>
 
     <script>
-        const newsDatabase = [
-            { id: 1, category: '🌐 MACRO', impact: 'HIGH', title: 'FED Chairman Signals Rate Cuts Ahead of FOMC Meeting', source: 'BLOOMBERG FAST', hoursAgo: 0.2 },
-            { id: 2, category: '🥇 COMMODITY', impact: 'HIGH', title: 'XAU/USD Surges Past $2,430 as Safe-Haven Demand Spikes', source: 'REUTERS WIRE', hoursAgo: 2.5 },
-            { id: 3, category: '💱 FOREX', impact: 'MEDIUM', title: 'US Jobless Claims Fall to 228K vs 235K Expected', source: 'MARKETWATCH', hoursAgo: 14.0 },
-            { id: 4, category: '🇮🇩 SAHAM', impact: 'LOW', title: 'Bank of Indonesia Keeps Benchmark Rate Steady at 6.25%', source: 'CNBC WIRE', hoursAgo: 28.5 },
-            { id: 5, category: '💱 FOREX', impact: 'LOW', title: 'Old Asian Currency Analysis Data', source: 'EXPIRED WIRE', hoursAgo: 32.0 }
-        ];
-
-        let currentCategory = '💱 FOREX';
-
-        function getValidNews() {
-            return newsDatabase.filter(item => item.hoursAgo < 30.0);
-        }
-
-        function renderNews() {
-            const list = document.getElementById('newsList');
-            const validNews = getValidNews();
-            const categoryNews = validNews.filter(item => item.category === currentCategory || currentCategory === '💱 FOREX');
-            
-            document.getElementById('articleCount').innerText = `ACTIVE ARTICLES: ${categoryNews.length} (MAX AGE: 30H)`;
-            
-            list.innerHTML = '';
-            if (categoryNews.length === 0) {
-                list.innerHTML = '<div style="color: #666; text-align: center; margin-top: 40px;">Tidak ada berita aktif dalam 30 jam terakhir.</div>';
-                return;
-            }
-
-            categoryNews.forEach(news => {
-                const card = document.createElement('div');
-                card.className = `news-card ${news.impact}`;
-                card.innerHTML = `
-                    <div class="news-meta">
-                        <span class="news-time">LIVE WIRE</span>
-                        <span class="news-impact impact-${news.impact}">${news.impact}</span>
-                        <span>${news.source} • ${news.hoursAgo}h ago</span>
-                    </div>
-                    <div class="news-title">${news.title}</div>
-                `;
-                list.appendChild(card);
-            });
-        }
-
-        function switchTab(category) {
-            currentCategory = category;
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.innerText === category);
-            });
-            document.getElementById('categoryLabel').innerText = `LIVE WIRE :: ${category}`;
-            renderNews();
-        }
-
+        let currentTabName = '🚨 IMPORTANT NEWS';
+        let currentKeyword = 'high-impact';
         let secondsLeft = 1490;
+
         setInterval(() => {
             if (secondsLeft > 0) {
                 secondsLeft--;
-                const m = Math.floor(secondsLeft / 60).toString().padStart(2, '0');
-                const s = (secondsLeft % 60).toString().padStart(2, '0');
-                document.getElementById('countdownTimer').innerText = `${m}:${s}`;
-            } else {
-                document.getElementById('alertBanner').style.display = 'none';
+                const timerElem = document.getElementById('tabCountdown');
+                if (timerElem) {
+                    const m = Math.floor(secondsLeft / 60).toString().padStart(2, '0');
+                    const s = (secondsLeft % 60).toString().padStart(2, '0');
+                    timerElem.innerText = `${m}:${s}`;
+                }
             }
         }, 1000);
 
-        renderNews();
+        async function fetchLiveNews(keyword) {
+            const list = document.getElementById('newsList');
+            list.innerHTML = '<div class="loading-text">⚡ Mengambil data berita dari pasar global...</div>';
+
+            if (keyword === 'high-impact') {
+                const m = Math.floor(secondsLeft / 60).toString().padStart(2, '0');
+                const s = (secondsLeft % 60).toString().padStart(2, '0');
+                
+                list.innerHTML = `
+                    <div class="alert-box-tab">
+                        <div>
+                            <div style="font-weight: bold; font-size: 12px; color: #ffeb3b;">⚠️ IMPORTANT NEWS CALENDAR</div>
+                            <div style="font-size: 13px; font-weight: bold; margin-top: 2px;">US CPI & Core Inflation Data (MoM/YoY)</div>
+                        </div>
+                        <div style="background:#000; border:1px solid #ff4d4d; color:#ff4d4d; padding:4px 10px; font-weight:bold; font-size:16px;" id="tabCountdown">${m}:${s}</div>
+                    </div>
+                `;
+                fetchFromRSS('cpi+fomc+nfp', list, true);
+                return;
+            }
+
+            fetchFromRSS(keyword, list, false);
+        }
+
+        async function fetchFromRSS(searchKey, containerElem, appendMode) {
+            const rssUrl = `https://news.google.com/rss/search?q=${searchKey}+when:30h&hl=en-US&gl=US&ceid=US:en`;
+            const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                
+                if (data.status === 'ok' && data.items.length > 0) {
+                    renderItems(data.items, containerElem, appendMode);
+                } else if (!appendMode) {
+                    containerElem.innerHTML = '<div style="color: #666; text-align: center; margin-top: 40px;">Tidak ada berita aktif dalam 30 jam terakhir.</div>';
+                }
+            } catch (err) {
+                if (!appendMode) {
+                    containerElem.innerHTML = '<div style="color: #ff4d4d; text-align: center; margin-top: 40px;">Gagal memuat data berita. Silakan refresh.</div>';
+                }
+            }
+        }
+
+        function renderItems(items, containerElem, appendMode) {
+            const now = new Date();
+            let validCount = 0;
+
+            items.forEach(item => {
+                const pubDate = new Date(item.pubDate);
+                const hoursAgo = Math.abs(now - pubDate) / 36e5;
+
+                if (hoursAgo <= 30.0) {
+                    validCount++;
+                    const card = document.createElement('a');
+                    card.className = `news-card ${appendMode ? 'HIGH' : ''}`;
+                    card.href = item.link;
+                    card.target = '_blank';
+                    
+                    const cleanSnippet = item.description ? item.description.replace(/<[^>]*>?/gm, '').substring(0, 140) + '...' : '';
+
+                    card.innerHTML = `
+                        <div class="news-meta">
+                            <span class="news-time">LIVE WIRE 🔗 (Klik untuk baca)</span>
+                            <span class="news-impact">${appendMode ? 'IMPORTANT' : 'REAL-TIME'}</span>
+                            <span>${item.author || 'GLOBAL WIRE'} • ${hoursAgo.toFixed(1)} jam lalu</span>
+                        </div>
+                        <div class="news-title">${item.title}</div>
+                        <div class="news-snippet">${cleanSnippet}</div>
+                    `;
+                    containerElem.appendChild(card);
+                }
+            });
+
+            document.getElementById('articleCount').innerText = `BERITA AKTIF: ${validCount} (MAX USIA: 30 JAM)`;
+        }
+
+        function switchTab(label, keyword) {
+            currentTabName = label;
+            currentKeyword = keyword;
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText.includes(label));
+            });
+            document.getElementById('categoryLabel').innerText = `LIVE WIRE :: ${label}`;
+            
+            fetchLiveNews(keyword);
+        }
+
+        fetchLiveNews('high-impact');
     </script>
 </body>
 </html>
