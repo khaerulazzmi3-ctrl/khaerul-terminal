@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KHAERUL TERMINAL | PRO BLOOMBERG</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
+        body { background-color: #050505; color: #fff; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        /* HEADER BAR */
+        .header { background-color: #0f141c; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #ffb700; }
+        .logo-box { display: flex; align-items: center; gap: 10px; }
+        .badge { background: #ffb700; color: #000; font-weight: bold; padding: 2px 6px; font-size: 11px; border-radius: 2px; }
+        .title { color: #00ff66; font-size: 16px; font-weight: bold; letter-spacing: 1.5px; }
+        .top-info { color: #ff9900; font-size: 11px; font-weight: bold; }
+
+        /* ALERT BAR 25 MINS BEFORE NEWS */
+        .alert-banner { background-color: #900C3F; color: white; padding: 8px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #ff4d4d; }
+        .alert-title { font-size: 11px; font-weight: bold; color: #ffeb3b; }
+        .timer-box { background: #000; border: 1px solid #ff4d4d; color: #ff4d4d; padding: 3px 8px; font-weight: bold; font-size: 14px; }
+
+        /* TICKER RUNNING */
+        .ticker-wrap { background: #181d26; height: 30px; display: flex; align-items: center; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #222; }
+        .ticker-item { padding: 0 15px; font-size: 11px; }
+        .up { color: #00ff66; font-weight: bold; }
+        .down { color: #ff4d4d; font-weight: bold; }
+
+        /* TABS NAV */
+        .tabs-bar { background: #111; display: flex; overflow-x: auto; border-bottom: 1px solid #333; }
+        .tab-btn { background: none; border: none; color: #888; padding: 10px 20px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .tab-btn.active { color: #ffb700; border-bottom: 2px solid #ffb700; background: #181818; }
+
+        /* NEWS FEED CONTAINER */
+        .feed-container { flex: 1; padding: 15px; overflow-y: auto; background: #090c10; }
+        .feed-header { display: flex; justify-content: space-between; color: #ffb700; font-size: 11px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        
+        /* NEWS ITEM CARD */
+        .news-card { background: #11161d; padding: 12px; margin-bottom: 10px; border-left: 4px solid #00ff66; border-radius: 2px; }
+        .news-card.HIGH { border-left-color: #ff4d4d; }
+        .news-card.MEDIUM { border-left-color: #ff9900; }
+        .news-card.LOW { border-left-color: #0088ff; }
+        .news-meta { display: flex; justify-content: space-between; font-size: 10px; color: #888; margin-bottom: 5px; }
+        .news-time { color: #00ff66; font-weight: bold; }
+        .news-impact { padding: 1px 4px; font-weight: bold; border-radius: 2px; }
+        .impact-HIGH { background: rgba(255, 77, 77, 0.2); color: #ff4d4d; }
+        .impact-MEDIUM { background: rgba(255, 153, 0, 0.2); color: #ff9900; }
+        .impact-LOW { background: rgba(0, 136, 255, 0.2); color: #0088ff; }
+        .news-title { color: #fff; font-size: 13px; font-weight: bold; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo-box">
+            <span class="badge">BLOOMBERG MODE</span>
+            <span class="title">KHAERUL TERMINAL</span>
+        </div>
+        <div class="top-info">AUTO-PURGE: 30H 🧹</div>
+    </div>
+
+    <!-- ALERT 25 MENIT BEFORE HIGH IMPACT NEWS -->
+    <div class="alert-banner" id="alertBanner">
+        <div>
+            <div style="font-weight: bold; font-size: 12px;">⚠️ HIGH IMPACT NEWS ALERT (< 25 MINS)</div>
+            <div class="alert-title" id="newsTitle">US CPI & Core Inflation Data (MoM/YoY)</div>
+        </div>
+        <div class="timer-box" id="countdownTimer">24:50</div>
+    </div>
+
+    <!-- RUNNING TICKER -->
+    <div class="ticker-wrap">
+        <div class="ticker-item">XAU/USD: <span class="up">2,432.10 (+1.25%)</span></div>
+        <div class="ticker-item">EUR/USD: <span class="down">1.0892 (-0.15%)</span></div>
+        <div class="ticker-item">BTC/USD: <span class="up">64,120.00 (+3.40%)</span></div>
+        <div class="ticker-item">USD/IDR: <span class="down">15,850.00 (-0.05%)</span></div>
+        <div class="ticker-item">US10Y: <span class="down">3.89% (-0.02%)</span></div>
+        <div class="ticker-item">NVDA: <span class="up">128.50 (+2.10%)</span></div>
+    </div>
+
+    <!-- TABS MENU -->
+    <div class="tabs-bar">
+        <button class="tab-btn active" onclick="switchTab('💱 FOREX')">💱 FOREX</button>
+        <button class="tab-btn" onclick="switchTab('🥇 COMMODITY')">🥇 COMMODITY</button>
+        <button class="tab-btn" onclick="switchTab('₿ CRYPTO')">₿ CRYPTO</button>
+        <button class="tab-btn" onclick="switchTab('🇮🇩 SAHAM')">🇮🇩 SAHAM</button>
+        <button class="tab-btn" onclick="switchTab('💻 TECH')">💻 TECH</button>
+        <button class="tab-btn" onclick="switchTab('🌐 MACRO')">🌐 MACRO</button>
+    </div>
+
+    <!-- NEWS FEED DISPLAY -->
+    <div class="feed-container">
+        <div class="feed-header">
+            <span id="categoryLabel">LIVE WIRE :: 💱 FOREX</span>
+            <span id="articleCount">ACTIVE ARTICLES: 4 (MAX AGE: 30H)</span>
+        </div>
+        <div id="newsList"></div>
+    </div>
+
+    <script>
+        const newsDatabase = [
+            { id: 1, category: '🌐 MACRO', impact: 'HIGH', title: 'FED Chairman Signals Rate Cuts Ahead of FOMC Meeting', source: 'BLOOMBERG FAST', hoursAgo: 0.2 },
+            { id: 2, category: '🥇 COMMODITY', impact: 'HIGH', title: 'XAU/USD Surges Past $2,430 as Safe-Haven Demand Spikes', source: 'REUTERS WIRE', hoursAgo: 2.5 },
+            { id: 3, category: '💱 FOREX', impact: 'MEDIUM', title: 'US Jobless Claims Fall to 228K vs 235K Expected', source: 'MARKETWATCH', hoursAgo: 14.0 },
+            { id: 4, category: '🇮🇩 SAHAM', impact: 'LOW', title: 'Bank of Indonesia Keeps Benchmark Rate Steady at 6.25%', source: 'CNBC WIRE', hoursAgo: 28.5 },
+            { id: 5, category: '💱 FOREX', impact: 'LOW', title: 'Old Asian Currency Analysis Data', source: 'EXPIRED WIRE', hoursAgo: 32.0 }
+        ];
+
+        let currentCategory = '💱 FOREX';
+
+        function getValidNews() {
+            return newsDatabase.filter(item => item.hoursAgo < 30.0);
+        }
+
+        function renderNews() {
+            const list = document.getElementById('newsList');
+            const validNews = getValidNews();
+            const categoryNews = validNews.filter(item => item.category === currentCategory || currentCategory === '💱 FOREX');
+            
+            document.getElementById('articleCount').innerText = `ACTIVE ARTICLES: ${categoryNews.length} (MAX AGE: 30H)`;
+            
+            list.innerHTML = '';
+            if (categoryNews.length === 0) {
+                list.innerHTML = '<div style="color: #666; text-align: center; margin-top: 40px;">Tidak ada berita aktif dalam 30 jam terakhir.</div>';
+                return;
+            }
+
+            categoryNews.forEach(news => {
+                const card = document.createElement('div');
+                card.className = `news-card ${news.impact}`;
+                card.innerHTML = `
+                    <div class="news-meta">
+                        <span class="news-time">LIVE WIRE</span>
+                        <span class="news-impact impact-${news.impact}">${news.impact}</span>
+                        <span>${news.source} • ${news.hoursAgo}h ago</span>
+                    </div>
+                    <div class="news-title">${news.title}</div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function switchTab(category) {
+            currentCategory = category;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText === category);
+            });
+            document.getElementById('categoryLabel').innerText = `LIVE WIRE :: ${category}`;
+            renderNews();
+        }
+
+        let secondsLeft = 1490;
+        setInterval(() => {
+            if (secondsLeft > 0) {
+                secondsLeft--;
+                const m = Math.floor(secondsLeft / 60).toString().padStart(2, '0');
+                const s = (secondsLeft % 60).toString().padStart(2, '0');
+                document.getElementById('countdownTimer').innerText = `${m}:${s}`;
+            } else {
+                document.getElementById('alertBanner').style.display = 'none';
+            }
+        }, 1000);
+
+        renderNews();
+    </script>
+</body>
+</html>
