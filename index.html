@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KHAERUL TERMINAL | REAL-TIME BLOOMBERG</title>
+    <title>KHAERUL TERMINAL | TRADINGVIEW REAL-TIME</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
         body { background-color: #050505; color: #fff; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -14,11 +14,8 @@
         .title { color: #00ff66; font-size: 16px; font-weight: bold; letter-spacing: 1.5px; }
         .top-info { color: #ff9900; font-size: 11px; font-weight: bold; }
 
-        .ticker-wrap { background: #181d26; height: 32px; display: flex; align-items: center; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #222; scrollbar-width: none; }
-        .ticker-wrap::-webkit-scrollbar { display: none; }
-        .ticker-item { padding: 0 15px; font-size: 11px; border-right: 1px solid #2a3240; }
-        .up { color: #00ff66; font-weight: bold; }
-        .down { color: #ff4d4d; font-weight: bold; }
+        /* CONTAINER TICKER TRADINGVIEW */
+        .tv-ticker-container { background: #111; height: 46px; border-bottom: 1px solid #222; overflow: hidden; }
 
         .tabs-bar { background: #111; display: flex; overflow-x: auto; border-bottom: 1px solid #333; }
         .tab-btn { background: none; border: none; color: #888; padding: 10px 16px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
@@ -51,12 +48,28 @@
         <div class="top-info">HAPUS OTOMATIS: > 30 JAM 🧹</div>
     </div>
 
-    <div class="ticker-wrap" id="tickerWrap">
-        <div class="ticker-item">PAXG/USDT (EMAS): <span id="tickXAU" class="up">LOAD...</span></div>
-        <div class="ticker-item">BTC/USDT: <span id="tickBTC" class="up">LOAD...</span></div>
-        <div class="ticker-item">ETH/USDT: <span id="tickETH" class="up">LOAD...</span></div>
-        <div class="ticker-item">EUR/USD: <span id="tickEUR" class="up">LOAD...</span></div>
-        <div class="ticker-item">USD/IDR: <span id="tickIDR" class="down">LOAD...</span></div>
+    <!-- TRADINGVIEW REAL-TIME TICKER TAPE -->
+    <div class="tv-ticker-container">
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+            {
+                "symbols": [
+                    { "proName": "OANDA:XAUUSD", "title": "XAU/USD (EMAS)" },
+                    { "proName": "BINANCE:BTCUSDT", "title": "BTC/USDT" },
+                    { "proName": "FX_IDC:EURUSD", "title": "EUR/USD" },
+                    { "proName": "FX_IDC:USDIDR", "title": "USD/IDR" },
+                    { "proName": "TVC:US10Y", "title": "US 10Y BOND" },
+                    { "proName": "NASDAQ:NVDA", "title": "NVIDIA" }
+                ],
+                "showSymbolLogo": true,
+                "isTransparent": true,
+                "displayMode": "adaptive",
+                "colorTheme": "dark",
+                "locale": "id"
+            }
+            </script>
+        </div>
     </div>
 
     <div class="tabs-bar">
@@ -80,48 +93,6 @@
     </div>
 
     <script>
-        async function fetchRealTimePrices() {
-            try {
-                const binanceRes = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","PAXGUSDT"]');
-                const binanceData = await binanceRes.json();
-
-                binanceData.forEach(item => {
-                    const price = parseFloat(item.lastPrice).toLocaleString('en-US', { minimumFractionDigits: 2 });
-                    const change = parseFloat(item.priceChangePercent).toFixed(2);
-                    const isUp = parseFloat(change) >= 0;
-                    const changeText = `${isUp ? '+' : ''}${change}%`;
-                    const classColor = isUp ? 'up' : 'down';
-
-                    if (item.symbol === 'BTCUSDT') {
-                        document.getElementById('tickBTC').className = classColor;
-                        document.getElementById('tickBTC').innerText = `${price} (${changeText})`;
-                    } else if (item.symbol === 'ETHUSDT') {
-                        document.getElementById('tickETH').className = classColor;
-                        document.getElementById('tickETH').innerText = `${price} (${changeText})`;
-                    } else if (item.symbol === 'PAXGUSDT') {
-                        document.getElementById('tickXAU').className = classColor;
-                        document.getElementById('tickXAU').innerText = `${price} (${changeText})`;
-                    }
-                });
-
-                const fxRes = await fetch('https://open.er-api.com/v6/latest/USD');
-                const fxData = await fxRes.json();
-                
-                if (fxData && fxData.rates) {
-                    const idr = fxData.rates.IDR.toLocaleString('en-US', { maximumFractionDigits: 0 });
-                    const eur = (1 / fxData.rates.EUR).toFixed(4);
-                    
-                    document.getElementById('tickIDR').innerText = `Rp ${idr}`;
-                    document.getElementById('tickEUR').innerText = `${eur}`;
-                }
-            } catch (err) {
-                console.log('Price fetch error:', err);
-            }
-        }
-
-        fetchRealTimePrices();
-        setInterval(fetchRealTimePrices, 5000);
-
         function getTargetTime() {
             const now = new Date();
             let target = new Date();
@@ -193,7 +164,6 @@
                 const data = await response.json();
                 
                 if (data.status === 'ok' && data.items.length > 0) {
-                    // URUTKAN BERITA TERBARU DULUAN
                     data.items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
                     renderItems(data.items, containerElem, appendMode);
                 } else if (!appendMode) {
