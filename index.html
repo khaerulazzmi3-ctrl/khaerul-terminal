@@ -3,32 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KHAERUL TERMINAL | 7 CATEGORIES BLOOMBERG</title>
+    <title>KHAERUL TERMINAL | REAL-TIME BLOOMBERG</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
         body { background-color: #050505; color: #fff; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        /* HEADER BAR */
         .header { background-color: #0f141c; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #ffb700; }
         .logo-box { display: flex; align-items: center; gap: 10px; }
         .badge { background: #ffb700; color: #000; font-weight: bold; padding: 2px 6px; font-size: 11px; border-radius: 2px; }
         .title { color: #00ff66; font-size: 16px; font-weight: bold; letter-spacing: 1.5px; }
         .top-info { color: #ff9900; font-size: 11px; font-weight: bold; }
 
-        /* TICKER RUNNING */
-        .ticker-wrap { background: #181d26; height: 30px; display: flex; align-items: center; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #222; }
-        .ticker-item { padding: 0 15px; font-size: 11px; }
+        .ticker-wrap { background: #181d26; height: 32px; display: flex; align-items: center; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #222; scrollbar-width: none; }
+        .ticker-wrap::-webkit-scrollbar { display: none; }
+        .ticker-item { padding: 0 15px; font-size: 11px; border-right: 1px solid #2a3240; }
         .up { color: #00ff66; font-weight: bold; }
         .down { color: #ff4d4d; font-weight: bold; }
 
-        /* TABS NAV (7 KATEGORI) */
         .tabs-bar { background: #111; display: flex; overflow-x: auto; border-bottom: 1px solid #333; }
         .tab-btn { background: none; border: none; color: #888; padding: 10px 16px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
         .tab-btn.active { color: #ffb700; border-bottom: 2px solid #ffb700; background: #181818; }
         .tab-btn.high-impact-tab { color: #ff4d4d; }
         .tab-btn.high-impact-tab.active { color: #ff4d4d; border-bottom: 2px solid #ff4d4d; background: rgba(255, 77, 77, 0.1); }
 
-        /* NEWS FEED DISPLAY */
         .feed-container { flex: 1; padding: 15px; overflow-y: auto; background: #090c10; }
         .feed-header { display: flex; justify-content: space-between; color: #ffb700; font-size: 11px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
         
@@ -51,31 +48,27 @@
             <span class="badge">BLOOMBERG MODE</span>
             <span class="title">KHAERUL TERMINAL</span>
         </div>
-        <div class="top-info">AUTO-PURGE: > 30 JAM 🧹</div>
+        <div class="top-info">HAPUS OTOMATIS: > 30 JAM 🧹</div>
     </div>
 
-    <!-- TICKER RUNNING -->
-    <div class="ticker-wrap">
-        <div class="ticker-item">XAU/USD: <span class="up">2,432.10 (+1.25%)</span></div>
-        <div class="ticker-item">EUR/USD: <span class="down">1.0892 (-0.15%)</span></div>
-        <div class="ticker-item">BTC/USD: <span class="up">64,120.00 (+3.40%)</span></div>
-        <div class="ticker-item">USD/IDR: <span class="down">15,850.00 (-0.05%)</span></div>
-        <div class="ticker-item">US10Y: <span class="down">3.89% (-0.02%)</span></div>
-        <div class="ticker-item">NVDA: <span class="up">128.50 (+2.10%)</span></div>
+    <div class="ticker-wrap" id="tickerWrap">
+        <div class="ticker-item">PAXG/USDT (EMAS): <span id="tickXAU" class="up">LOAD...</span></div>
+        <div class="ticker-item">BTC/USDT: <span id="tickBTC" class="up">LOAD...</span></div>
+        <div class="ticker-item">ETH/USDT: <span id="tickETH" class="up">LOAD...</span></div>
+        <div class="ticker-item">EUR/USD: <span id="tickEUR" class="up">LOAD...</span></div>
+        <div class="ticker-item">USD/IDR: <span id="tickIDR" class="down">LOAD...</span></div>
     </div>
 
-    <!-- 7 TABS MENU -->
     <div class="tabs-bar">
-        <button class="tab-btn high-impact-tab active" onclick="switchTab('🚨 IMPORTANT NEWS', 'high-impact')">🚨 IMPORTANT NEWS (<25M)</button>
-        <button class="tab-btn" onclick="switchTab('💱 FOREX', 'forex')">💱 FOREX</button>
-        <button class="tab-btn" onclick="switchTab('🥇 COMMODITY', 'oil-gold')">🥇 COMMODITY</button>
-        <button class="tab-btn" onclick="switchTab('₿ CRYPTO', 'crypto')">₿ CRYPTO</button>
-        <button class="tab-btn" onclick="switchTab('🇮🇩 SAHAM', 'indonesia')">🇮🇩 SAHAM</button>
-        <button class="tab-btn" onclick="switchTab('💻 TECH', 'technology')">💻 TECH</button>
-        <button class="tab-btn" onclick="switchTab('🌐 MACRO', 'economy')">🌐 MACRO</button>
+        <button class="tab-btn high-impact-tab active" onclick="switchTab('🚨 IMPORTANT NEWS', 'inflasi+suku+bunga+fed')">🚨 IMPORTANT NEWS (<25M)</button>
+        <button class="tab-btn" onclick="switchTab('💱 FOREX', 'forex+rupiah+dolar')">💱 FOREX</button>
+        <button class="tab-btn" onclick="switchTab('🥇 COMMODITY', 'harga+emas+minyak+iran')">🥇 COMMODITY</button>
+        <button class="tab-btn" onclick="switchTab('₿ CRYPTO', 'kripto+bitcoin')">₿ CRYPTO</button>
+        <button class="tab-btn" onclick="switchTab('🇮🇩 SAHAM', 'ihsg+saham')">🇮🇩 SAHAM</button>
+        <button class="tab-btn" onclick="switchTab('💻 TECH', 'teknologi+ekonomi')">💻 TECH</button>
+        <button class="tab-btn" onclick="switchTab('🌐 MACRO', 'ekonomi+global')">🌐 MACRO</button>
     </div>
 
-    <!-- FEED BERITA -->
     <div class="feed-container">
         <div class="feed-header">
             <span id="categoryLabel">LIVE WIRE :: 🚨 IMPORTANT NEWS (<25M)</span>
@@ -87,40 +80,104 @@
     </div>
 
     <script>
-        let currentTabName = '🚨 IMPORTANT NEWS';
-        let currentKeyword = 'high-impact';
-        let secondsLeft = 1490;
+        async function fetchRealTimePrices() {
+            try {
+                const binanceRes = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","PAXGUSDT"]');
+                const binanceData = await binanceRes.json();
 
-        setInterval(() => {
-            if (secondsLeft > 0) {
-                secondsLeft--;
-                const timerElem = document.getElementById('tabCountdown');
-                if (timerElem) {
-                    const m = Math.floor(secondsLeft / 60).toString().padStart(2, '0');
-                    const s = (secondsLeft % 60).toString().padStart(2, '0');
-                    timerElem.innerText = `${m}:${s}`;
+                binanceData.forEach(item => {
+                    const price = parseFloat(item.lastPrice).toLocaleString('en-US', { minimumFractionDigits: 2 });
+                    const change = parseFloat(item.priceChangePercent).toFixed(2);
+                    const isUp = parseFloat(change) >= 0;
+                    const changeText = `${isUp ? '+' : ''}${change}%`;
+                    const classColor = isUp ? 'up' : 'down';
+
+                    if (item.symbol === 'BTCUSDT') {
+                        document.getElementById('tickBTC').className = classColor;
+                        document.getElementById('tickBTC').innerText = `${price} (${changeText})`;
+                    } else if (item.symbol === 'ETHUSDT') {
+                        document.getElementById('tickETH').className = classColor;
+                        document.getElementById('tickETH').innerText = `${price} (${changeText})`;
+                    } else if (item.symbol === 'PAXGUSDT') {
+                        document.getElementById('tickXAU').className = classColor;
+                        document.getElementById('tickXAU').innerText = `${price} (${changeText})`;
+                    }
+                });
+
+                const fxRes = await fetch('https://open.er-api.com/v6/latest/USD');
+                const fxData = await fxRes.json();
+                
+                if (fxData && fxData.rates) {
+                    const idr = fxData.rates.IDR.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                    const eur = (1 / fxData.rates.EUR).toFixed(4);
+                    
+                    document.getElementById('tickIDR').innerText = `Rp ${idr}`;
+                    document.getElementById('tickEUR').innerText = `${eur}`;
                 }
+            } catch (err) {
+                console.log('Price fetch error:', err);
             }
-        }, 1000);
+        }
+
+        fetchRealTimePrices();
+        setInterval(fetchRealTimePrices, 5000);
+
+        function getTargetTime() {
+            const now = new Date();
+            let target = new Date();
+            target.setMinutes(45, 0, 0);
+            if (now.getMinutes() >= 45) {
+                target.setHours(target.getHours() + 1);
+            }
+            return target;
+        }
+
+        let targetNewsTime = getTargetTime();
+
+        function updateCountdownDisplay() {
+            const now = new Date();
+            let diff = Math.floor((targetNewsTime - now) / 1000);
+            
+            if (diff <= 0) {
+                targetNewsTime = getTargetTime();
+                diff = Math.floor((targetNewsTime - now) / 1000);
+            }
+
+            const m = Math.floor(diff / 60).toString().padStart(2, '0');
+            const s = (diff % 60).toString().padStart(2, '0');
+            
+            const timerElem = document.getElementById('tabCountdown');
+            if (timerElem) {
+                timerElem.innerText = `${m}:${s}`;
+            }
+        }
+
+        setInterval(updateCountdownDisplay, 1000);
+
+        let currentTabName = '🚨 IMPORTANT NEWS';
+        let currentKeyword = 'inflasi+suku+bunga+fed';
 
         async function fetchLiveNews(keyword) {
             const list = document.getElementById('newsList');
-            list.innerHTML = '<div class="loading-text">⚡ Mengambil data berita dari pasar global...</div>';
+            list.innerHTML = '<div class="loading-text">⚡ Mengambil data berita terbaru...</div>';
 
-            if (keyword === 'high-impact') {
-                const m = Math.floor(secondsLeft / 60).toString().padStart(2, '0');
-                const s = (secondsLeft % 60).toString().padStart(2, '0');
+            if (keyword.includes('inflasi')) {
+                updateCountdownDisplay();
+                const now = new Date();
+                let diff = Math.floor((targetNewsTime - now) / 1000);
+                const m = Math.floor(diff / 60).toString().padStart(2, '0');
+                const s = (diff % 60).toString().padStart(2, '0');
                 
                 list.innerHTML = `
                     <div class="alert-box-tab">
                         <div>
-                            <div style="font-weight: bold; font-size: 12px; color: #ffeb3b;">⚠️ IMPORTANT NEWS CALENDAR</div>
-                            <div style="font-size: 13px; font-weight: bold; margin-top: 2px;">US CPI & Core Inflation Data (MoM/YoY)</div>
+                            <div style="font-weight: bold; font-size: 12px; color: #ffeb3b;">⚠️ PERINGATAN KALENDER BERITA PENTING</div>
+                            <div style="font-size: 13px; font-weight: bold; margin-top: 2px;">Data Inflasi US CPI & Keputusan Suku Bunga Fed</div>
                         </div>
                         <div style="background:#000; border:1px solid #ff4d4d; color:#ff4d4d; padding:4px 10px; font-weight:bold; font-size:16px;" id="tabCountdown">${m}:${s}</div>
                     </div>
                 `;
-                fetchFromRSS('cpi+fomc+nfp', list, true);
+                fetchFromRSS(keyword, list, true);
                 return;
             }
 
@@ -128,7 +185,7 @@
         }
 
         async function fetchFromRSS(searchKey, containerElem, appendMode) {
-            const rssUrl = `https://news.google.com/rss/search?q=${searchKey}+when:30h&hl=en-US&gl=US&ceid=US:en`;
+            const rssUrl = `https://news.google.com/rss/search?q=${searchKey}+when:30h&hl=id&gl=ID&ceid=ID:id`;
             const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
 
             try {
@@ -136,6 +193,8 @@
                 const data = await response.json();
                 
                 if (data.status === 'ok' && data.items.length > 0) {
+                    // URUTKAN BERITA TERBARU DULUAN
+                    data.items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
                     renderItems(data.items, containerElem, appendMode);
                 } else if (!appendMode) {
                     containerElem.innerHTML = '<div style="color: #666; text-align: center; margin-top: 40px;">Tidak ada berita aktif dalam 30 jam terakhir.</div>';
@@ -144,6 +203,18 @@
                 if (!appendMode) {
                     containerElem.innerHTML = '<div style="color: #ff4d4d; text-align: center; margin-top: 40px;">Gagal memuat data berita. Silakan refresh.</div>';
                 }
+            }
+        }
+
+        function formatTimeAgo(hours) {
+            if (hours < 1 / 60) {
+                const seconds = Math.floor(hours * 3600);
+                return `${seconds < 1 ? 1 : seconds} detik lalu`;
+            } else if (hours < 1) {
+                const minutes = Math.floor(hours * 60);
+                return `${minutes} menit lalu`;
+            } else {
+                return `${hours.toFixed(1)} jam lalu`;
             }
         }
 
@@ -163,12 +234,13 @@
                     card.target = '_blank';
                     
                     const cleanSnippet = item.description ? item.description.replace(/<[^>]*>?/gm, '').substring(0, 140) + '...' : '';
+                    const timeAgoText = formatTimeAgo(hoursAgo);
 
                     card.innerHTML = `
                         <div class="news-meta">
-                            <span class="news-time">LIVE WIRE 🔗 (Klik untuk baca)</span>
-                            <span class="news-impact">${appendMode ? 'IMPORTANT' : 'REAL-TIME'}</span>
-                            <span>${item.author || 'GLOBAL WIRE'} • ${hoursAgo.toFixed(1)} jam lalu</span>
+                            <span class="news-time">BERITA LANGSUNG 🔗 (Klik untuk baca)</span>
+                            <span class="news-impact">${appendMode ? 'PENTING' : 'REAL-TIME'}</span>
+                            <span>${item.author || 'SUMBER BERITA'} • ${timeAgoText}</span>
                         </div>
                         <div class="news-title">${item.title}</div>
                         <div class="news-snippet">${cleanSnippet}</div>
@@ -192,7 +264,7 @@
             fetchLiveNews(keyword);
         }
 
-        fetchLiveNews('high-impact');
+        fetchLiveNews('inflasi+suku+bunga+fed');
     </script>
 </body>
 </html>
