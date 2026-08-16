@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KHAERUL TERMINAL | TRADINGVIEW REAL-TIME</title>
+    <title>KHAERUL TERMINAL | DYNAMIC BLOOMBERG</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
         body { background-color: #050505; color: #fff; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -34,7 +34,9 @@
         .news-title { color: #fff; font-size: 13px; font-weight: bold; line-height: 1.4; }
         .news-snippet { color: #aaa; font-size: 11px; margin-top: 5px; line-height: 1.3; }
         .loading-text { color: #ffb700; text-align: center; font-size: 13px; margin-top: 30px; }
-        .alert-box-tab { background: #900C3F; color: #fff; padding: 10px; border-radius: 4px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #ff4d4d; }
+        
+        /* BANNER WARNING DINAMIS */
+        .alert-box-tab { background: #900C3F; color: #fff; padding: 10px; border-radius: 4px; margin-bottom: 15px; display: none; justify-content: space-between; align-items: center; border: 1px solid #ff4d4d; }
     </style>
 </head>
 <body>
@@ -82,12 +84,21 @@
     </div>
 
     <div class="feed-container">
+        <!-- BANNER HANYA MUNCUL JIKA SISA WAKTU <= 25 MENIT -->
+        <div class="alert-box-tab" id="dynamicAlertBox">
+            <div style="flex: 1; padding-right: 15px;">
+                <div style="font-weight: bold; font-size: 11px; color: #ffeb3b;">⚠️ PERINGATAN KALENDER BERITA PENTING (< 25 MENIT)</div>
+                <div style="font-size: 13px; font-weight: bold; margin-top: 2px; color: #fff;" id="alertTitle">Loading...</div>
+            </div>
+            <div style="background:#000; border:1px solid #ff4d4d; color:#ff4d4d; padding:4px 10px; font-weight:bold; font-size:16px;" id="tabCountdown">--:--</div>
+        </div>
+
         <div class="feed-header">
             <span id="categoryLabel">LIVE WIRE :: 🚨 IMPORTANT NEWS (<25M)</span>
             <span id="articleCount">BERITA AKTIF: 0 (MAX USIA: 30 JAM)</span>
         </div>
         <div id="newsList">
-            <div class="loading-text">⚡ Mengambil data berita rilis mendatang...</div>
+            <div class="loading-text">⚡ Mengambil data berita terbaru...</div>
         </div>
     </div>
 
@@ -113,12 +124,20 @@
                 diff = Math.floor((targetNewsTime - now) / 1000);
             }
 
-            const m = Math.floor(diff / 60).toString().padStart(2, '0');
-            const s = (diff % 60).toString().padStart(2, '0');
+            const alertBox = document.getElementById('dynamicAlertBox');
             
-            const timerElem = document.getElementById('tabCountdown');
-            if (timerElem) {
-                timerElem.innerText = `${m}:${s}`;
+            // LOGIKA DINAMIS: CUMA MUNCUL KALAU WAKTU RILIS <= 25 MENIT (1500 DETIK)
+            if (diff <= 1500 && currentKeyword.includes('inflasi')) {
+                alertBox.style.display = 'flex';
+                const m = Math.floor(diff / 60).toString().padStart(2, '0');
+                const s = (diff % 60).toString().padStart(2, '0');
+                const timerElem = document.getElementById('tabCountdown');
+                if (timerElem) {
+                    timerElem.innerText = `${m}:${s}`;
+                }
+            } else {
+                // HILANGKAN BANNER JIKA SISA WAKTU > 25 MENIT
+                alertBox.style.display = 'none';
             }
         }
 
@@ -136,6 +155,7 @@
                 return;
             }
 
+            document.getElementById('dynamicAlertBox').style.display = 'none';
             fetchFromRSS(keyword, list, false);
         }
 
@@ -151,24 +171,8 @@
                     data.items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
                     
                     if (appendMode) {
-                        const topNewsTitle = data.items[0].title;
+                        document.getElementById('alertTitle').innerText = data.items[0].title;
                         updateCountdownDisplay();
-                        const now = new Date();
-                        let diff = Math.floor((targetNewsTime - now) / 1000);
-                        const m = Math.floor(diff / 60).toString().padStart(2, '0');
-                        const s = (diff % 60).toString().padStart(2, '0');
-
-                        containerElem.innerHTML = `
-                            <div class="alert-box-tab">
-                                <div style="flex: 1; padding-right: 15px;">
-                                    <div style="font-weight: bold; font-size: 11px; color: #ffeb3b;">⚠️ PERINGATAN KALENDER BERITA PENTING</div>
-                                    <div style="font-size: 13px; font-weight: bold; margin-top: 2px; color: #fff;">${topNewsTitle}</div>
-                                </div>
-                                <div style="background:#000; border:1px solid #ff4d4d; color:#ff4d4d; padding:4px 10px; font-weight:bold; font-size:16px;" id="tabCountdown">${m}:${s}</div>
-                            </div>
-                        `;
-                    } else {
-                        containerElem.innerHTML = '';
                     }
 
                     renderItems(data.items, containerElem, appendMode);
@@ -197,6 +201,10 @@
         function renderItems(items, containerElem, appendMode) {
             const now = new Date();
             let validCount = 0;
+
+            // Hapus kartu berita lama sebelum render ulang
+            const existingCards = containerElem.querySelectorAll('.news-card');
+            existingCards.forEach(c => c.remove());
 
             items.forEach(item => {
                 const pubDate = new Date(item.pubDate);
