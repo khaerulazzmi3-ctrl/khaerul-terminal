@@ -14,7 +14,6 @@
         .title { color: #00ff66; font-size: 16px; font-weight: bold; letter-spacing: 1.5px; }
         .top-info { color: #ff9900; font-size: 11px; font-weight: bold; }
 
-        /* CONTAINER TICKER TRADINGVIEW */
         .tv-ticker-container { background: #111; height: 46px; border-bottom: 1px solid #222; overflow: hidden; }
 
         .tabs-bar { background: #111; display: flex; overflow-x: auto; border-bottom: 1px solid #333; }
@@ -133,21 +132,6 @@
             list.innerHTML = '<div class="loading-text">⚡ Mengambil data berita terbaru...</div>';
 
             if (keyword.includes('inflasi')) {
-                updateCountdownDisplay();
-                const now = new Date();
-                let diff = Math.floor((targetNewsTime - now) / 1000);
-                const m = Math.floor(diff / 60).toString().padStart(2, '0');
-                const s = (diff % 60).toString().padStart(2, '0');
-                
-                list.innerHTML = `
-                    <div class="alert-box-tab">
-                        <div>
-                            <div style="font-weight: bold; font-size: 12px; color: #ffeb3b;">⚠️ PERINGATAN KALENDER BERITA PENTING</div>
-                            <div style="font-size: 13px; font-weight: bold; margin-top: 2px;">Data Inflasi US CPI & Keputusan Suku Bunga Fed</div>
-                        </div>
-                        <div style="background:#000; border:1px solid #ff4d4d; color:#ff4d4d; padding:4px 10px; font-weight:bold; font-size:16px;" id="tabCountdown">${m}:${s}</div>
-                    </div>
-                `;
                 fetchFromRSS(keyword, list, true);
                 return;
             }
@@ -165,6 +149,28 @@
                 
                 if (data.status === 'ok' && data.items.length > 0) {
                     data.items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+                    
+                    if (appendMode) {
+                        const topNewsTitle = data.items[0].title;
+                        updateCountdownDisplay();
+                        const now = new Date();
+                        let diff = Math.floor((targetNewsTime - now) / 1000);
+                        const m = Math.floor(diff / 60).toString().padStart(2, '0');
+                        const s = (diff % 60).toString().padStart(2, '0');
+
+                        containerElem.innerHTML = `
+                            <div class="alert-box-tab">
+                                <div style="flex: 1; padding-right: 15px;">
+                                    <div style="font-weight: bold; font-size: 11px; color: #ffeb3b;">⚠️ PERINGATAN KALENDER BERITA PENTING</div>
+                                    <div style="font-size: 13px; font-weight: bold; margin-top: 2px; color: #fff;">${topNewsTitle}</div>
+                                </div>
+                                <div style="background:#000; border:1px solid #ff4d4d; color:#ff4d4d; padding:4px 10px; font-weight:bold; font-size:16px;" id="tabCountdown">${m}:${s}</div>
+                            </div>
+                        `;
+                    } else {
+                        containerElem.innerHTML = '';
+                    }
+
                     renderItems(data.items, containerElem, appendMode);
                 } else if (!appendMode) {
                     containerElem.innerHTML = '<div style="color: #666; text-align: center; margin-top: 40px;">Tidak ada berita aktif dalam 30 jam terakhir.</div>';
